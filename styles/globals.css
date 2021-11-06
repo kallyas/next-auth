@@ -14,3 +14,19 @@ a {
 * {
   box-sizing: border-box;
 }
+
+
+button {
+  padding: 12px 20px;
+  color: white;
+  background-color: #000000;
+  width: 25%;
+  margin: 8px 0;
+}
+
+.container p {
+  font-size: 1.5rem;
+  margin: 5px 0;
+}
+
+@import url('Home.module.css');
