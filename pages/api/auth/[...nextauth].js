@@ -1,18 +1,10 @@
 import NextAuth from "next-auth";
 import EmailProvider from "next-auth/providers/email";
+import GitHubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { FirebaseAdapter } from "@next-auth/firebase-adapter";
 import { PrismaClient } from "@prisma/client";
 
-import firebase from "firebase/app";
-import "firebase/firestore";
-
 const prisma = new PrismaClient();
-const firebaseConfig = {};
-
-const firestore = (
-  firebase.apps[0] ?? firebase.initializeApp(firebaseConfig)
-).firestore();
 
 export default NextAuth({
   providers: [
@@ -20,16 +12,24 @@ export default NextAuth({
       server: process.env.EMAIL_SERVER,
       from: process.env.EMAIL_FROM,
     }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    }),
   ],
-  adapter: FirebaseAdapter(firestore),
+  adapter: PrismaAdapter(prisma),
   secret: process.env.SECRET,
   session: {
     jwt: true,
   },
   jwt: {},
   pages: {},
-  callbacks: {},
+  callbacks: {
+    async redirect({ url, baseUrl }) {
+      return baseUrl;
+    },
+  },
   events: {},
-  theme: "dark",
+  theme: "auto",
   debug: false,
 });
