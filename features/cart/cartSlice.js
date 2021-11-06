@@ -41,6 +41,9 @@ export const cartSlice = createSlice({
       state.totalItems = 0;
       state.totalPrice = 0;
     },
+    getTotal: (state) => {
+      state.total = state.totalItems
+    }
   },
 });
 

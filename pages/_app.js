@@ -2,8 +2,9 @@ import "../styles/globals.css";
 import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
 import Layout from "../components/Layout";
-import {Provider} from 'react-redux';
-import store from '../store';
+import { Provider } from "react-redux";
+import { persistor, store } from "../store";
+import { PersistGate } from "redux-persist/integration/react";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -22,13 +23,20 @@ function MyApp({ Component, pageProps }) {
           integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm"
           crossOrigin="anonymous"
         />
-        <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossOrigin="anonymous" />
+        <script
+          defer
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+          crossOrigin="anonymous"
+        />
       </Head>
       <SessionProvider session={pageProps.session}>
         <Provider store={store}>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+          <PersistGate loading={null} persistor={persistor}>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </PersistGate>
         </Provider>
       </SessionProvider>
     </>

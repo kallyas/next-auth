@@ -3,10 +3,13 @@ import Image from "next/image";
 import { useSession, signOut, signIn } from "next-auth/react";
 import { cartSelector } from "../features/cart/cartSlice";
 import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 const Navbar = () => {
   const { data: session } = useSession();
-  const { total } = useSelector(cartSelector);
+  const { totalItems } = useSelector(cartSelector);
+
+  
   return (
     <header className="p-3 mb-3 border-bottom">
       <div className="container">
@@ -55,7 +58,7 @@ const Navbar = () => {
               aria-label="Search"
             />
           </form>
-          {total}
+          {totalItems}
           {session ? (
             <>
             <i className="fas fa-shopping-cart 5x" style={{marginRight: "15px", cursor: "pointer", fontSize: "x-large"}}></i>
