@@ -1,18 +1,34 @@
 import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "./features";
-import { persistStore, persistReducer } from 'redux-persist'
-import storage from 'redux-persist/lib/storage'
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PERSIST,
+  PAUSE,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
 const persistConfig = {
-    key: 'root',
-    storage,
-  }
+  key: "root",
+  version: 1,
+  storage,
+};
 
-const persistedReducer = persistReducer(persistConfig, rootReducer)
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default () => {
-    let store = configureStore(persistedReducer)
-    let persistor = persistStore(store)
-    return { store, persistor }
-  }
+const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
+})
+
+export const persistor = persistStore(store);
+export default store;

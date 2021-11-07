@@ -3,13 +3,12 @@ import Image from "next/image";
 import { useSession, signOut, signIn } from "next-auth/react";
 import { cartSelector } from "../features/cart/cartSlice";
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
+import router from "next/router";
 
 const Navbar = () => {
   const { data: session } = useSession();
   const { totalItems } = useSelector(cartSelector);
 
-  
   return (
     <header className="p-3 mb-3 border-bottom">
       <div className="container">
@@ -29,24 +28,9 @@ const Navbar = () => {
           </Link>
           <ul className="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
             <li>
-              <Link href="#">
-                <a className="nav-link px-2 link-secondary">Overview</a>
+              <Link href="/">
+                <a className="nav-link px-2 link-secondary">Products</a>
               </Link>
-            </li>
-            <li>
-              <a href="#" className="nav-link px-2 link-dark">
-                Inventory
-              </a>
-            </li>
-            <li>
-              <a href="#" className="nav-link px-2 link-dark">
-                Customers
-              </a>
-            </li>
-            <li>
-              <a href="#" className="nav-link px-2 link-dark">
-                Products
-              </a>
             </li>
           </ul>
 
@@ -58,10 +42,19 @@ const Navbar = () => {
               aria-label="Search"
             />
           </form>
-          {totalItems}
+
           {session ? (
             <>
-            <i className="fas fa-shopping-cart 5x" style={{marginRight: "15px", cursor: "pointer", fontSize: "x-large"}}></i>
+              {totalItems}
+              <i
+                onClick={() => router.push("/cart")}
+                className="fas fa-shopping-cart 5x"
+                style={{
+                  marginRight: "15px",
+                  cursor: "pointer",
+                  fontSize: "x-large",
+                }}
+              ></i>
               <div className="dropdown text-end">
                 <Link href="#">
                   <a
@@ -89,7 +82,9 @@ const Navbar = () => {
                 >
                   <li>
                     <Link href="#">
-                      <a className="dropdown-item">{session.user?.name || session.user.email}</a>
+                      <a className="dropdown-item">
+                        {session.user?.name || session.user.email}
+                      </a>
                     </Link>
                   </li>
                   <li>
@@ -106,8 +101,12 @@ const Navbar = () => {
                     <hr className="dropdown-divider" />
                   </li>
                   <li>
-                    <button onClick={() => signOut()} className="btn btn-outline-dark" style={{ width: "90%", padding: "2px", margin: "0 5px"}}>
-                        Sign out
+                    <button
+                      onClick={() => signOut()}
+                      className="btn btn-outline-dark"
+                      style={{ width: "90%", padding: "2px", margin: "0 5px" }}
+                    >
+                      Sign out
                     </button>
                   </li>
                 </ul>
@@ -116,9 +115,11 @@ const Navbar = () => {
           ) : (
             <div className="d-flex justify-content-between">
               <button
-              onClick={() => signIn()} 
-              type="button" 
-              className="btn btn-outline-dark" style={{ width: "100%", marginRight: "15px"}}>
+                onClick={() => signIn()}
+                type="button"
+                className="btn btn-outline-dark"
+                style={{ width: "100%", marginRight: "15px" }}
+              >
                 Login
               </button>
             </div>

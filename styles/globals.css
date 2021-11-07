@@ -29,4 +29,15 @@ button {
   margin: 5px 0;
 }
 
+.parent {
+  min-height: 100vh;
+}
+
+.close {
+  font-size: x-large;
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 @import url('Home.module.css');

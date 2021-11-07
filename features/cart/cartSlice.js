@@ -27,14 +27,11 @@ export const cartSlice = createSlice({
     removeFromCart: (state, action) => {
       const { data } = action.payload;
       const { cart } = state;
-      const cartItem = cart.find((item) => item.id === data.id);
-      if (cartItem.quantity > 1) {
-        cartItem.quantity -= 1;
-      } else {
-        state.cart = cart.filter((item) => item.id !== data.id);
-      }
-      state.totalItems -= 1;
-      state.totalPrice -= data.price;
+      state.totalItems -= 1
+      state.totalPrice -= data.price * data.quantity;
+      state.cart = cart.filter((item) => item.id !== data.id);
+      
+
     },
     clearCart: (state) => {
       state.cart = [];
@@ -42,12 +39,36 @@ export const cartSlice = createSlice({
       state.totalPrice = 0;
     },
     getTotal: (state) => {
-      state.total = state.totalItems
-    }
+      state.total = state.totalItems;
+    },
+    reduceQuantity: (state, action) => {
+      const { product } = action.payload;
+      const { cart } = state;
+      const cartItem = cart.find((item) => item.id === product.id);
+      if (cartItem.quantity > 1) {
+        cartItem.quantity -= 1;
+        state.totalPrice -= product.price;
+      }
+    },
+
+    increaseQuantity: (state, action) => {
+      const { product } = action.payload;
+      const { cart } = state;
+      const cartItem = cart.find((item) => item.id === product.id);
+      cartItem.quantity += 1;
+      state.totalPrice += product.price;
+    },
   },
 });
 
-export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  clearCart,
+  increaseQuantity,
+  reduceQuantity,
+  getTotal,
+} = cartSlice.actions;
 
 export const cartSelector = (state) => state.cart;
 

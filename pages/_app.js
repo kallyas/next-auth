@@ -3,7 +3,7 @@ import Head from "next/head";
 import { SessionProvider } from "next-auth/react";
 import Layout from "../components/Layout";
 import { Provider } from "react-redux";
-import { persistor, store } from "../store";
+import store, { persistor } from "../store";
 import { PersistGate } from "redux-persist/integration/react";
 
 function MyApp({ Component, pageProps }) {
