@@ -1,0 +1,15 @@
+.card {
+  background: white;
+  padding: 60px;
+  border-radius: 4px;
+  box-shadow: 0 2px 3px #c8d0d8;
+  display: inline-block;
+  margin: 0 auto;
+}
+
+.checkmark {
+  color: #9abc66;
+  font-size: 100px;
+  line-height: 200px;
+  margin-left: .5em;
+}

@@ -1,13 +1,45 @@
 import { getSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 import { cartSelector } from "../features/cart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { reduceQuantity, increaseQuantity, removeFromCart } from "../features/cart/cartSlice";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  reduceQuantity,
+  increaseQuantity,
+  removeFromCart,
+} from "../features/cart/cartSlice";
 
 const Cart = () => {
+  const [loading, setLoading] = useState(false);
   const { cart, totalPrice } = useSelector(cartSelector);
   console.log({ cart, totalPrice, reduceQuantity, increaseQuantity });
   const dispatch = useDispatch();
+  const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  const stripePromise = loadStripe(publishableKey);
+
+  const createCheckoutSession = async () => {
+    setLoading(true);
+    const stripe = await stripePromise;
+    const checkoutSession = await fetch("/api/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({cart}),
+    });
+
+    const {session} = await checkoutSession.json();
+    const sessionId = session.id;
+    const result = await stripe.redirectToCheckout({ sessionId });
+
+    if (result.error) {
+      console.error(result.error);
+      setLoading(false);
+    }
+    setLoading(false);
+  };
   return (
     <div>
       <div className="container bg-white rounded-top mt-5" id="zero-pad">
@@ -62,19 +94,27 @@ const Cart = () => {
                   <b>${item.price}</b>
                 </div>
                 <div className="pl-md-0 pl-2">
-                  <span className="fa fa-minus-square text-secondary"
-                  onClick={() => dispatch(reduceQuantity({ product: item }))}
+                  <span
+                    className="fa fa-minus-square text-secondary"
+                    onClick={() => dispatch(reduceQuantity({ product: item }))}
                   ></span>
                   <span className="px-md-3 px-1">{item.quantity}</span>
-                  <span className="fa fa-plus-square text-secondary"
-                  onClick={() => dispatch(increaseQuantity({product: item}))}></span>
+                  <span
+                    className="fa fa-plus-square text-secondary"
+                    onClick={() =>
+                      dispatch(increaseQuantity({ product: item }))
+                    }
+                  ></span>
                 </div>
                 <div className="pl-md-0 pl-1">
                   <b>${(item.price * item.quantity).toFixed(2)}</b>
                 </div>
-                <div className="close"
-                onClick={() => dispatch(removeFromCart({data: item}))}
-                >&times;</div>
+                <div
+                  className="close"
+                  onClick={() => dispatch(removeFromCart({ data: item }))}
+                >
+                  &times;
+                </div>
               </div>
             ))}
           </div>
@@ -85,18 +125,24 @@ const Cart = () => {
           <div className="col-lg-10 col-12">
             <div className="d-flex justify-content-between align-items-center">
               <div>
-                <button className="btn btn-sm bg-light border border-dark w-100">
-                  GO BACK
-                </button>
+                <Link href="/" passHref>
+                  <button className="btn btn-sm bg-light border border-dark w-100">
+                    GO BACK
+                  </button>
+                </Link>
               </div>
               <div className="px-md-0 px-1" id="footer-font">
                 <b className="pl-md-4">
-                  SUBTOTAL <span className="pl-md-4">${totalPrice.toFixed(2)}</span>
+                  SUBTOTAL{" "}
+                  <span className="pl-md-4">${totalPrice.toFixed(2)}</span>
                 </b>
               </div>
               <div>
-                <button className="btn btn-sm bg-dark text-white px-lg-5 px-3 w-100">
-                  CONTINUE
+                <button
+                  onClick={createCheckoutSession}
+                  className="btn btn-sm bg-dark text-white px-lg-5 px-3 w-100"
+                >
+                  {loading ? "Loading..." : "CHECKOUT"}
                 </button>
               </div>
             </div>
