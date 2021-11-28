@@ -141,6 +141,7 @@ const Cart = () => {
                 <button
                   onClick={createCheckoutSession}
                   className="btn btn-sm bg-dark text-white px-lg-5 px-3 w-100"
+                  disabled={cart.length === 0}
                 >
                   {loading ? "Loading..." : "CHECKOUT"}
                 </button>
